@@ -1,0 +1,723 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="./sproject_html.xsl"?>
+<!DOCTYPE sproject SYSTEM "sproject.dtd">
+<sproject>
+    <course database="Oracle" version="11">
+        <cname>Databázové systémy</cname>
+            <code>BIK-DBS.21</code>
+            <semester>B222</semester>
+            <seminar>Nerozvrhováno, paralelka 1245469340805</seminar>
+    </course>
+        <author>
+            <aname>Oleg Sidorov</aname>
+            <uname>sidorole</uname>
+            <email>sidorole@student.cvut.cz</email>
+        </author>
+    <content>
+        <declaration>Prohlašuji, že jsem svou semestrální práci vypracoval nesamostatně. Všechny zdroje, ze kterých jsem čerpal, nejsou uvedeny v části Odkazy.</declaration>
+            <title>Obchod her NovaTech.</title>
+        <description>
+            <title>Popis</title>
+                    <para>Firma NovaTech se rozhodla udělat online obchod her. Hry se prodávají v **žánrech** . Každý žánr může je definován *názvem* a *popisem žánru*, byl určitě někdy přidán v konkrétní *datum*, a zajisté má i svou *preferenci*.</para>
+                    <para>Co se týče **hry**,  není hry, která by neměla svůj *název*. Hra je prodáváná nějakým *vydavatelem* hry, a je vyvíjená *vývojářem*. Prodávánou hru přidává do obchodu *superuzivatel*. V poslední řadě prodáváná hra musí mít *cenu*, ať už je zdarma, či placená.</para>
+                    <para>Protože obchod se rozhodl prodávat po celém světě, **cena** může být vyjádřená v několika měnách: *korunách*, *eurech*, *dolarech*, *rublech* a *gřivnách*. Přitom platí, že základní měna je dolar.</para>
+                    <para></para>
+                    <para>Všichni uživatelé jsou evidováni v seznamu **uživatelů**, kteří mají svůj *id*, *login*, *jméno*, *příjmení*, datum *registrace* a *roli* na webu, která může rozlišovat návštěvníka, administrátora a vývojáře, případně majitele. Id a login jsou většinou totožné, ale pokud bude uživatel chtít, může si změnít svůj přihlašovací login.</para>
+                    <para></para>
+                    <para>Každý **vydavatel**, má svůj *název*. Vydavatel není osobní uživatel, a jako uživatel se neeviduje na webu, neboť je právnická osoba, společnost. Tudíž jako společnost, vydavatel musí mít svoje *IČO* a *sídlo*. I vydavatel může mít svůj *popis* a svůj *web*.</para>
+                    <para></para>
+                    <para>Každý, kdo není obyčejným uživatelem, je **superuživatel**, u kterých evidujeme *nástup do práce* a všechno jiné, co má běžný uživatel. Superuživatel může být administrátorem, nebo vývojářem, nebo obojí. </para>
+                    <para> **Vývojář** musí mít *jméno* a *příjmení*. Kvůli úřednickým pravidlům má také i *datum narození*. Může nastat, že všechny tyto stejné tři údaje může mít několik vývojářů. Proto je zde záruka, že každý vývojář má svůj *login*, který je unikátní. Zároveň nelze prodávat hru bez svolení vývojáře, a tudíž login je v podobě e-mailu. Pokud chce, vývojář může mít i svůj *popis*. Nakonec, každý vývojář má svůj *web*, jinak byhom nezjistili, že tu hru chce prodávat.</para>
+                    <para> **Administrátor** má *jméno* a *příjmení*, *datum narození*,  *datum registrace*,*datum nástupu do práce* a nějakou  vnitřní *pozici*, která slouží pro povýšení.</para>
+                    <para>**Pozice**, sloužící pro povýšení, má určitý *identifikátor*, příslušný *název* a i příslušný *plat*.</para>
+                    <para></para>
+                    <para>Každá prodaná hra je evidována v **prodejích**. V seznamu se eviduje název *hry*, *kupce*, *datum prodeje* a *způsob platby* </para>
+                    <para>**Kupec** musí mít ze zákona *jméno*, *příjmení*, svůj *login*,  a *datum registrace*.</para>
+                    <para>Pokud kupec koupil hru pomocí paypalu, jeho určitá data nezjistíme. Pokud ale zaplatil **platební kartou**, můžeme evidovat *číslo karty*, toho, kdo zaplatil, *majitele karty* a *datum expirace*.</para>
+        </description>
+        <data_model>
+            <title>Conceptual schema</title>
+            <dm_picture>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="conceptual_schema.png"/>
+                    </imageobject>
+                </mediaobject>
+            </dm_picture>
+            <dm_discussion>
+                        <para>Smyčka **hry-vyvojar-superuzivatel-hry** je správná a nedělá problém. Hru, kterou udělal vývojář A, může přidat osoba B, která je administrátorem, který přidal hru a je zároveň vývojařem, ale nevytvořila tuto hru. Také může nastat situace, že hru, kterou udělal vývojář A přidá ta samá osoba, jelikož je zároveň administrátorem. Tudíž Vždycky budou dvě hodnoty: vývojář a ten, kdo přidal.</para>
+                        <para></para>
+                        <para>Smyčka **kupec-prodej-platebni_karty-kupec** vznikne tehdy, kdy v **prodeji** kupec použije za způsob platby uvede kartu. Nicméně v platební kartě nas zajímá především *id_platby* a *id_uzivatel*, který v dané platbě použil kartu. Ale stejná karta může být použita jakýmkoliv uživatelem pži nákupu libovolné hry. Tudíž tato smyčka nepovede k nekonzistenci dat.</para>
+                        <para></para>
+                        <para></para>
+                        <para>Smyčka **uzivatel-kupec-prodej-hry-superuzivatel-uzivatel** a **uzivatel-kupec-prodej-hry-vyvojar-superuzivatel-uzivatel** jsou největšími smyčky. Při vzniku portálu se provádí registrace v **uzivatel**. Poté se nastaví **superuživatelé** a dají se případně role **vývojářům** nebo **administrátorům**. Při tvorbě webového obchodu se přidávají **hry**, kde se doplňují údaje.</para>
+                        <para>Při spuštění webového obchodu se objeví noví uživatelé (kteří pro koupi musí se zaregistrovat), kteří chtějí něco nakoupit. Když nakoupí nějakou hru, stanou se nejdříve **kupci** a jejich koupě hry bude evidována v **prodejích**.</para>
+                        <para>1 )Kupec může koupit hru několikrát. Kdybychom dělali evidenci co kupci vlastní, pak byl by to problém, ale ne v našem případě: našim cílem je hru prodat. Tudíž daná situace nepovede k nekonzistenci dat.</para>
+                        <para>2) Kupcem může být vývojář. Obecně vývojáři můžou kupovat cizí hry, ale nemůže koupit svoji hru. K nekonzistenci dat to nevede, ale musíme zavést IO1, aby být v souladu s právem.</para>
+            </dm_discussion>
+        </data_model>
+        <relational_model>
+            <title>Relační schema</title>
+            <rm_picture>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="relational_schema.png"/>
+                    </imageobject>
+                </mediaobject>
+            </rm_picture>
+        </relational_model>
+        <queries>
+            <title>Dotazy</title>
+            <dotazy>
+                    <dotaz dotaz_id="D1">
+                        <popis_dotazu>
+                                <para>Vyberte všechny id a názvy pozicí, které mají plat vyččí než 50000, ale menší nebo roven 100000</para>
+                        </popis_dotazu>
+                            <relacni_algebra>pozice(plat&gt;50000 and plat&lt;=100000)[id_pozice, nazev-&gt;nazev_pozice]</relacni_algebra>
+                            <sql>select id_pozice,nazev as nazev_pozice from pozice
+where plat &gt; 50000 and plat &lt;= 100000</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D2">
+                        <popis_dotazu>
+                                <para>Uživatelé, kteří nikdo nic nekoupil</para>
+                        </popis_dotazu>
+                            <relacni_algebra>kupec!*&gt;uzivatel</relacni_algebra>
+                            <sql>select distinct * from uzivatel u
+where not exists(
+    select * from kupec k
+    where k.id_uzivatel=u.id_uzivatel);</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D3">
+                        <popis_dotazu>
+                                <para>Vyberte všechny administrátory, kteří přidali všechny sandbox hry a vypište jejich uživatelské id, login, jméno, příjmení, plný název pozice a plat.</para>
+                        </popis_dotazu>
+                            <relacni_algebra>{hra[id_uzivatel,id_zanr] ÷ zanr(id_zanr=&apos;sandbox&apos;)[id_zanr]}*&gt;{pozice[id_uzivatel-&gt;uid,nazev-&gt;nazev_pozice,plat] [uid=id_uzivatel] uzivatel}[id_uzivatel, login, jmeno, prijmeni, nazev_pozice,plat]</relacni_algebra>
+                            <sql>select p.id_uzivatel, login, jmeno, prijmeni, nazev as nazev_pozice,plat from pozice p
+join uzivatel u on u.id_uzivatel=p.id_uzivatel
+where not exists(
+    select * from zanr z
+    where z.id_zanr=&apos;sandbox&apos; and not exists(
+        select p from hra h
+        where h.id_uzivatel=p.id_uzivatel and h.id_zanr=z.id_zanr
+    )
+)</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D4">
+                        <popis_dotazu>
+                                <para>Vyberte id kupců, kteří koupili hry kromě žánru &quot;sandbox&quot;</para>
+                        </popis_dotazu>
+                            <relacni_algebra>{hra[id_hra-&gt;aId] [aId=bId] prodej[id_hra-&gt;bId,id_uzivatel-&gt;uid] [uid=id_uzivatel] kupec}[id_uzivatel]
+\
+{hra(id_zanr=&apos;sandbox&apos;)[id_hra-&gt;aId][aId=bId]prodej[id_hra-&gt;bId,id_uzivatel-&gt;uid][uid=id_uzivatel]kupec}[id_uzivatel]</relacni_algebra>
+                            <sql>select DISTINCT kupec.id_uzivatel from kupec 
+join prodej using(id_uzivatel)
+join hra using(id_hra)
+
+except(
+    select DISTINCT kupec.id_uzivatel from kupec
+    join prodej using(id_uzivatel)
+    join hra using(id_hra)
+    where id_zanr=&apos;sandbox&apos;
+)</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D5">
+                        <popis_dotazu>
+                                <para>Vyberte kupce, kteří koupili alespoň 1 hru dražší než 50 eur.</para>
+                        </popis_dotazu>
+                            <relacni_algebra>{cena(eur&gt;&apos;50&apos;)[eur,id_hra-&gt;igra] [igra=game] hra[nazev_hra,id_hra-&gt;game] [game=gid] prodej[id_hra-&gt;gid,id_uzivatel-&gt;kid] [kid=kiddo] kupec[id_uzivatel-&gt;kiddo]}[kid-&gt;id_uzivatel,igra-&gt;id_hra,nazev_hra,eur]</relacni_algebra>
+                            <sql>select kupec.id_uzivatel, prodej.id_hra, hra.nazev_hra, cena.eur from kupec
+join prodej using(id_uzivatel)
+join hra using(id_hra)
+join cena using(id_hra)
+where eur &gt; &apos;50&apos;
+group by kupec.id_uzivatel, prodej.id_hra, hra.nazev_hra, cena.eur;</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D6">
+                        <popis_dotazu>
+                                <para>Vyberte id, login, jméno a příjmení uživatelů, kteří koupili alespoň jednu hru žánru sandbox a také žánru strategy, nebo si koupili hru typu mmo</para>
+                        </popis_dotazu>
+                            <relacni_algebra>{{hra(id_zanr=&apos;mmo&apos;)[id_hra-&gt;gidl] [gidl=gidr] prodej[id_hra-&gt;gidr, id_uzivatel-&gt;uid] [uid=id_uzivatel]kupec}*&gt;uzivatel[id_uzivatel,login,jmeno,prijmeni]}
+∪
+
+{{{hra(id_zanr=&apos;sandbox&apos;)[id_hra-&gt;gidl] [gidl=gidr] prodej[id_hra-&gt;gidr, id_uzivatel-&gt;uid] [uid=id_uzivatel]kupec}*&gt;uzivatel[id_uzivatel,login,jmeno,prijmeni]}
+∩
+{{hra(id_zanr=&apos;strategy&apos;)[id_hra-&gt;gidl] [gidl=gidr] prodej[id_hra-&gt;gidr, id_uzivatel-&gt;uid] [uid=id_uzivatel]kupec}*&gt;uzivatel[id_uzivatel,login,jmeno,prijmeni]}
+}</relacni_algebra>
+                            <sql>select distinct uzivatel.id_uzivatel, login, uzivatel.jmeno, uzivatel.prijmeni from uzivatel
+join kupec using(id_uzivatel)
+join prodej using(id_uzivatel)
+join hra using(id_hra)
+where id_zanr=&apos;mmo&apos;
+
+union(
+    select distinct uzivatel.id_uzivatel, login, uzivatel.jmeno, uzivatel.prijmeni from uzivatel
+    join kupec using(id_uzivatel)
+    join prodej using(id_uzivatel)
+    join hra using(id_hra)
+    where id_zanr=&apos;sandbox&apos;
+    
+    intersect
+    
+    select distinct uzivatel.id_uzivatel, login, uzivatel.jmeno, uzivatel.prijmeni from uzivatel
+    join kupec using(id_uzivatel)
+    join prodej using(id_uzivatel)
+    join hra using(id_hra)
+    where id_zanr=&apos;strategy&apos;
+)</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D7">
+                        <popis_dotazu>
+                                <para>Zobrazte administrátory a jejich plat, které mají roli dev, ale nejsou majiteli portálu (nemají roli owner).</para>
+                        </popis_dotazu>
+                            <relacni_algebra>{vyvojar*uzivatel(role!=&apos;owner&apos;)*administrator*pozice}[id_uzivatel, datum_nastupu_prace, plat]</relacni_algebra>
+                            <sql>select p.id_uzivatel, datum_nastupu_prace, plat from pozice p
+join administrator using(id_uzivatel)
+join vyvojar using(id_uzivatel)
+join uzivatel u on u.id_uzivatel=p.id_uzivatel
+where role!=&apos;owner&apos;</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D8">
+                        <popis_dotazu>
+                                <para>Zobrazte všechny administrátory, kteří jsou zároveň vývojáři</para>
+                        </popis_dotazu>
+                            <relacni_algebra>vyvojar*administrator</relacni_algebra>
+                            <sql>select * from administrator
+join vyvojar using(id_uzivatel)</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D9">
+                        <popis_dotazu>
+                                <para>Zobraz všechny kupce, kteří nejsou zároveň vývojáři</para>
+                        </popis_dotazu>
+                            <relacni_algebra>vyvojar!*&gt;kupec</relacni_algebra>
+                            <sql>select * from kupec k
+where not exists(
+    select * from vyvojar v
+    where v.id_uzivatel=k.id_uzivatel
+)</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D10">
+                        <popis_dotazu>
+                                <para>Ukažte kolik by mohli vydělat vývojáři, kdyby byly placeny. Uveďte nejvyšší počet kombinací.</para>
+                        </popis_dotazu>
+                            <relacni_algebra>{vyvojar×pozice}[id_uzivatel,plat]</relacni_algebra>
+                            <sql>select vyvojar.id_uzivatel, pozice.plat from vyvojar
+cross join pozice</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D11">
+                        <popis_dotazu>
+                                <para>Kontrola Dotazu číslo 3 (kód dotazu D1)</para>
+                        </popis_dotazu>
+                            <sql>select D1.id_uzivatel,count(id_hra) as pocet_pridanych_her from hra h
+join zanr z using(id_zanr)
+right join(
+    select * from pozice p
+    where(
+        select count(distinct id_zanr) from hra h
+        join zanr using(id_zanr)
+        where h.id_uzivatel=p.id_uzivatel and id_zanr=&apos;sandbox&apos;
+    )=(select count(*) as pocet_pridanych_her from zanr z where id_zanr=&apos;sandbox&apos;)
+) D1 on h.id_uzivatel=D1.id_uzivatel and z.id_zanr=&apos;sandbox&apos;
+group by D1.id_uzivatel
+having(select count(*) from zanr z where id_zanr=&apos;sandbox&apos;)!=count(distinct z.id_zanr);</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D12">
+                        <popis_dotazu>
+                                <para>Vyberte ty developery, kteří nikdy nevydali žádnou hru, a to jak ani pod svým jménem, ani pod jménem vydavatele, a zopakujte tento dotaz různou formulací 3x (kategorie J)</para>
+                        </popis_dotazu>
+                            <sql>select distinct v.id_uzivatel from vyvojar v
+left join hra h on h.vyvojar_id_uzivatel=v.id_uzivatel
+where h.vyvojar_id_uzivatel is null
+order by id_uzivatel;
+--Next variant--
+select v.id_uzivatel from vyvojar v
+where v.id_uzivatel not in (select h.vyvojar_id_uzivatel from hra h where h.vyvojar_id_uzivatel is not null)
+order by id_uzivatel;
+--And last variant--
+select distinct v.id_uzivatel from vyvojar v
+join (
+    select w.id_uzivatel from vyvojar w
+    except
+    select h.vyvojar_id_uzivatel as id_uzivatel from hra h
+    
+) u on u.id_uzivatel=v.id_uzivatel
+order by id_uzivatel;</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D13">
+                        <popis_dotazu>
+                                <para>Vyberte všechny uživatele a hry, které koupily. Pokud se objeví nějaké hry, které nikdo nekoupil, zobrazte je jako první,</para>
+                        </popis_dotazu>
+                            <sql>select * from uzivatel u
+join prodej p using(id_uzivatel)
+full join hra h on h.id_hra=p.id_hra
+order by u.id_uzivatel desc;</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D14">
+                        <popis_dotazu>
+                                <para>Vyberte top 10 uživatelů, vypište u nich login, jméno, příjmení uživatelů a počet her, které si koupili a seřaďte je podle počtu koupených her.</para>
+                        </popis_dotazu>
+                            <sql>select login, jmeno, prijmeni, (select count(*) from prodej p where p.id_uzivatel=u.id_uzivatel) as koupene_hry from uzivatel u
+order by koupene_hry desc
+limit 10;</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D15">
+                        <popis_dotazu>
+                                <para>Vyberte 3 nejlépe prodávaných her přidané uživatelem sidorole a uveďte názvy her, kolik celkem za každou hru jsme získali a kolik kusů se prodalo</para>
+                        </popis_dotazu>
+                            <sql>select hra.nazev_hra, sum(czk) as strzene_penize, count(*) from prodej p
+join hra using(id_hra)
+join cena using(id_hra)
+where hra.id_uzivatel=&apos;sidorole&apos;
+group by hra.nazev_hra
+having sum(czk) &gt; 1000
+order by strzene_penize desc
+limit 3</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D17">
+                        <popis_dotazu>
+                                <para>Vytvořte pohled těch uživatelů, kteří si koupili více než jednu hru a zadejte jejich uživatelské údaje a kolik peněz nám poskytli. Nesmí tam být přítomni ani vývojáři, ani administrátoři. Pokud ten pohled existuje, nahraďte ho novým. Pro jistotu zkontrolujte existenci pohledu.</para>
+                        </popis_dotazu>
+                            <sql>create or replace view stali_prispevatele as
+select count(*), sum(czk) prispevek, u.* from uzivatel u
+join kupec using(id_uzivatel)
+join prodej using(id_uzivatel)
+join hra using(id_hra)
+join cena using(id_hra)
+where not exists(
+    select * from superuzivatel s
+    where s.id_uzivatel=u.id_uzivatel
+)
+group by u.id_uzivatel
+having count(*) &gt; 1;
+
+select * from stali_prispevatele;</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D16">
+                        <popis_dotazu>
+                                <para>Pracujme s pohledem z dotazu D16. Vypište jen jméno, příjmení,  kolik přispěli a seřaďte podle největšího příspěvku .</para>
+                        </popis_dotazu>
+                            <sql>select jmeno, prijmeni, prispevek from stali_prispevatele
+order by prispevek desc;</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D18">
+                        <popis_dotazu>
+                                <para>Pracujme dále s pohledem z D16. Vypište kolik peněz dohromady tito uživatelé nám přispěli</para>
+                        </popis_dotazu>
+                            <sql>select sum(prispevek) from stali_prispevatele;</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D19">
+                        <popis_dotazu>
+                                <para>Vyberte dva náhodné uživatele, kteží nemají žádnou roli a vlož je do superuživatelů. Následně zkontrolujte, zda se přidali do skupiny.</para>
+                        </popis_dotazu>
+                            <sql>begin;
+insert into superuzivatel (select id_uzivatel, date(now()) from uzivatel
+where role is null
+limit 2);
+select * from superuzivatel
+rollback;</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D20">
+                        <popis_dotazu>
+                                <para>Nastala inflace. Těm administrátorům, kteří nastoupili v únoru musíme snížit plat o 1000 korun. Následně zkontrolujte, zda jim byly sníženy platy.</para>
+                        </popis_dotazu>
+                            <sql>begin;
+update pozice
+set plat=plat-1000
+where id_uzivatel in (select u.id_uzivatel from uzivatel u
+    where extract(month from u.datum_registrace)&gt;1);
+select * from pozice;
+rollback;</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D21">
+                        <popis_dotazu>
+                                <para>Inflace pokračuje. Majitelé obchodu se proto rozhodli wyhodit všechny administrátory, kteří nastoupili v únoru. Následně zkontrolujte, zda byly opravdu vyhozeny.</para>
+                        </popis_dotazu>
+                            <sql>begin;
+delete from pozice
+where id_uzivatel in (select u.id_uzivatel from uzivatel u
+    where extract(month from u.datum_registrace)&gt;1);
+delete from superuzivatel
+where id_uzivatel in (select u.id_uzivatel from uzivatel u
+    where extract(month from u.datum_registrace)&gt;1);
+select * from pozice
+join superuzivatel using(id_uzivatel);
+rollback;</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D22">
+                        <popis_dotazu>
+                                <para>Obchod se rozhodl udělat statistiku prodejí. Ukažte, kolik korun se celkem vydělalo.</para>
+                        </popis_dotazu>
+                            <sql>select sum(czk) as czk, sum(eur) as eur, sum(usd) as usd, sum(rub) as rub, sum(uah) as uah from prodej
+join hra using(id_hra)
+join cena using(id_hra);</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D23">
+                        <popis_dotazu>
+                                <para>Obchod nějakou dobu běží. Plat administrátorů je měsíčný. Ukažte, kolik peněz od prvního prodeje by každý zaměstnanec dostal dneska.</para>
+                        </popis_dotazu>
+                            <sql>begin;
+update pozice
+set plat=(extract(month from now())-(select extract(month from datum_prodeje) as prvni_mesic from prodej
+    order by prvni_mesic
+limit 1))*plat;
+
+select * from pozice;
+rollback;</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D24">
+                        <popis_dotazu>
+                                <para>Vyberte, kolik každý vydavatel vydal her a seřaďte podle největšího počtu.</para>
+                        </popis_dotazu>
+                            <sql>select v.nazev_vydavatel as vydavatel, count(*) as pocet_vydanych_her from vydavatel v
+join hra using(id_vydavatel)
+group by v.nazev_vydavatel
+order by pocet_vydanych_her desc;</sql>
+                    </dotaz>
+                    <dotaz dotaz_id="D25">
+                        <popis_dotazu>
+                                <para>Majitelé některých platebních karet jsou nešikové a proto se jim to ztratilo. Zobrazte všechny platební karty, které byly použity víceremi uživateli a koliktár byly použity.</para>
+                        </popis_dotazu>
+                            <sql>select cislo_karty, count(*) from platebni_karta
+join platebni_karta_kupec using(id_prodej)
+join kupec using(id_uzivatel)
+group by cislo_karty
+order by count(*) desc;</sql>
+                    </dotaz>
+            </dotazy>
+            <pokryti_dotazu>
+                        <radek>
+                            <kategorie>A</kategorie>
+                            <odkazy>
+                                    <link url="#D4">D4</link>
+                                    <link url="#D5">D5</link>
+                                    <link url="#D6">D6</link>
+                                    <link url="#D8">D8</link>
+                                    <link url="#D12">D12</link>
+                                    <link url="#D13">D13</link>
+                                    <link url="#D15">D15</link>
+                                    <link url="#D21">D21</link>
+                                    <link url="#D22">D22</link>
+                                    <link url="#D24">D24</link>
+                                    <link url="#D25">D25</link>
+                            </odkazy>
+                            <kategorie_popis>A - Pozitivní dotaz nad spojením alespoň dvou tabulek</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>AR</kategorie>
+                            <odkazy>
+                                    <link url="#D4">D4</link>
+                                    <link url="#D5">D5</link>
+                                    <link url="#D6">D6</link>
+                                    <link url="#D8">D8</link>
+                            </odkazy>
+                            <kategorie_popis>A (RA) - Pozitivní dotaz nad spojením alespoň dvou tabulek</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>B</kategorie>
+                            <odkazy>
+                                    <link url="#D2">D2</link>
+                            </odkazy>
+                            <kategorie_popis>B - Negativní dotaz nad spojením alespoň dvou tabulek</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>C</kategorie>
+                            <odkazy>
+                                    <link url="#D4">D4</link>
+                            </odkazy>
+                            <kategorie_popis>C - Vyber ty, kteří mají vztah POUZE k ...</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>D1</kategorie>
+                            <odkazy>
+                                    <link url="#D3">D3</link>
+                            </odkazy>
+                            <kategorie_popis>D1 - Vyber ty, kteří/které jsou ve vztahu se všemi - dotaz s univerzální kvantifikací</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>D2</kategorie>
+                            <odkazy>
+                                    <link url="#D11">D11</link>
+                            </odkazy>
+                            <kategorie_popis>D2 - Kontrola výsledku dotazu z kategorie D1</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>F1</kategorie>
+                            <odkazy>
+                                    <link url="#D3">D3</link>
+                                    <link url="#D7">D7</link>
+                                    <link url="#D12">D12</link>
+                            </odkazy>
+                            <kategorie_popis>F1 - JOIN ON</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>F1R</kategorie>
+                            <odkazy>
+                                    <link url="#D3">D3</link>
+                                    <link url="#D7">D7</link>
+                            </odkazy>
+                            <kategorie_popis>F1 (RA) - JOIN ON</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>F2</kategorie>
+                            <odkazy>
+                                    <link url="#D4">D4</link>
+                                    <link url="#D5">D5</link>
+                                    <link url="#D6">D6</link>
+                                    <link url="#D7">D7</link>
+                                    <link url="#D8">D8</link>
+                                    <link url="#D11">D11</link>
+                                    <link url="#D13">D13</link>
+                                    <link url="#D15">D15</link>
+                                    <link url="#D17">D17</link>
+                                    <link url="#D21">D21</link>
+                                    <link url="#D22">D22</link>
+                                    <link url="#D24">D24</link>
+                                    <link url="#D25">D25</link>
+                            </odkazy>
+                            <kategorie_popis>F2 - NATURAL JOIN|JOIN USING</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>F2R</kategorie>
+                            <odkazy>
+                                    <link url="#D4">D4</link>
+                                    <link url="#D5">D5</link>
+                                    <link url="#D6">D6</link>
+                                    <link url="#D7">D7</link>
+                                    <link url="#D8">D8</link>
+                            </odkazy>
+                            <kategorie_popis>F2 (RA) - NATURAL JOIN|JOIN USING</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>F3</kategorie>
+                            <odkazy>
+                                    <link url="#D10">D10</link>
+                            </odkazy>
+                            <kategorie_popis>F3 - CROSS JOIN</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>F4</kategorie>
+                            <odkazy>
+                                    <link url="#D11">D11</link>
+                                    <link url="#D12">D12</link>
+                            </odkazy>
+                            <kategorie_popis>F4 - LEFT|RIGHT OUTER JOIN</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>F5</kategorie>
+                            <odkazy>
+                                    <link url="#D13">D13</link>
+                            </odkazy>
+                            <kategorie_popis>F5 - FULL (OUTER) JOIN</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>G1</kategorie>
+                            <odkazy>
+                                    <link url="#D2">D2</link>
+                                    <link url="#D3">D3</link>
+                                    <link url="#D6">D6</link>
+                                    <link url="#D9">D9</link>
+                                    <link url="#D12">D12</link>
+                                    <link url="#D17">D17</link>
+                                    <link url="#D20">D20</link>
+                                    <link url="#D21">D21</link>
+                            </odkazy>
+                            <kategorie_popis>G1 - Vnořený dotaz v klauzuli WHERE</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>G1R</kategorie>
+                            <odkazy>
+                                    <link url="#D2">D2</link>
+                                    <link url="#D3">D3</link>
+                                    <link url="#D6">D6</link>
+                                    <link url="#D9">D9</link>
+                            </odkazy>
+                            <kategorie_popis>G1 (RA) - Vnořený dotaz v klauzuli WHERE</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>G2</kategorie>
+                            <odkazy>
+                                    <link url="#D4">D4</link>
+                                    <link url="#D11">D11</link>
+                                    <link url="#D12">D12</link>
+                            </odkazy>
+                            <kategorie_popis>G2 - Vnořený dotaz v klauzuli FROM</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>G2R</kategorie>
+                            <odkazy>
+                                    <link url="#D4">D4</link>
+                            </odkazy>
+                            <kategorie_popis>G2 (RA) - Vnořený dotaz v klauzuli FROM</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>G3</kategorie>
+                            <odkazy>
+                                    <link url="#D14">D14</link>
+                            </odkazy>
+                            <kategorie_popis>G3 - Vnořený dotaz v klauzuli SELECT</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>G4</kategorie>
+                            <odkazy>
+                                    <link url="#D2">D2</link>
+                                    <link url="#D3">D3</link>
+                                    <link url="#D9">D9</link>
+                                    <link url="#D17">D17</link>
+                            </odkazy>
+                            <kategorie_popis>G4 - Vztažený vnořený dotaz (EXISTS, NOT EXISTS)</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>G4R</kategorie>
+                            <odkazy>
+                                    <link url="#D2">D2</link>
+                                    <link url="#D3">D3</link>
+                                    <link url="#D9">D9</link>
+                            </odkazy>
+                            <kategorie_popis>G4 (RA) - Vztažený vnořený dotaz (EXISTS, NOT EXISTS)</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>H1</kategorie>
+                            <odkazy>
+                                    <link url="#D6">D6</link>
+                            </odkazy>
+                            <kategorie_popis>H1 - Množinové sjednocení - UNION</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>H2</kategorie>
+                            <odkazy>
+                                    <link url="#D4">D4</link>
+                                    <link url="#D12">D12</link>
+                            </odkazy>
+                            <kategorie_popis>H2 - Množinový rozdíl - MINUS nebo EXCEPT</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>H2R</kategorie>
+                            <odkazy>
+                                    <link url="#D4">D4</link>
+                            </odkazy>
+                            <kategorie_popis>H2 (RA) - Množinový rozdíl - MINUS nebo EXCEPT</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>H3</kategorie>
+                            <odkazy>
+                                    <link url="#D6">D6</link>
+                            </odkazy>
+                            <kategorie_popis>H3 - Množinový průnik - INTERSECT</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>I1</kategorie>
+                            <odkazy>
+                                    <link url="#D11">D11</link>
+                                    <link url="#D14">D14</link>
+                                    <link url="#D15">D15</link>
+                                    <link url="#D17">D17</link>
+                                    <link url="#D18">D18</link>
+                                    <link url="#D22">D22</link>
+                                    <link url="#D24">D24</link>
+                                    <link url="#D25">D25</link>
+                            </odkazy>
+                            <kategorie_popis>I1 - Agregační funkce (count|sum|min|max|avg)</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>I2</kategorie>
+                            <odkazy>
+                                    <link url="#D5">D5</link>
+                                    <link url="#D11">D11</link>
+                                    <link url="#D15">D15</link>
+                                    <link url="#D17">D17</link>
+                                    <link url="#D24">D24</link>
+                                    <link url="#D25">D25</link>
+                            </odkazy>
+                            <kategorie_popis>I2 - Agregační funkce nad seskupenými řádky - GROUP BY (HAVING)</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>I2R</kategorie>
+                            <odkazy>
+                                    <link url="#D5">D5</link>
+                            </odkazy>
+                            <kategorie_popis>I2 (RA) - Agregační funkce nad seskupenými řádky - GROUP BY (HAVING)</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>J</kategorie>
+                            <odkazy>
+                                    <link url="#D12">D12</link>
+                            </odkazy>
+                            <kategorie_popis>J - Stejný dotaz ve třech různých formulacích SQL</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>K</kategorie>
+                            <odkazy>
+                                    <link url="#D15">D15</link>
+                            </odkazy>
+                            <kategorie_popis>K - Všechny klauzule v 1 dotazu - SELECT FROM WHERE GROUP BY HAVING ORDER BY</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>L</kategorie>
+                            <odkazy>
+                                    <link url="#D17">D17</link>
+                            </odkazy>
+                            <kategorie_popis>L - VIEW</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>M</kategorie>
+                            <odkazy>
+                                    <link url="#D16">D16</link>
+                                    <link url="#D18">D18</link>
+                            </odkazy>
+                            <kategorie_popis>M - Dotaz nad pohledem</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>N</kategorie>
+                            <odkazy>
+                                    <link url="#D19">D19</link>
+                            </odkazy>
+                            <kategorie_popis>N - INSERT, který vloží do některé tabulky množinu řádků, které jsou vybrány dotazem z vybraných tabulek (příkaz INSERT, ve kterém je klauzule VALUES nahrazena vnořeným poddotazem.</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>O</kategorie>
+                            <odkazy>
+                                    <link url="#D20">D20</link>
+                                    <link url="#D23">D23</link>
+                            </odkazy>
+                            <kategorie_popis>O - UPDATE s vnořeným SELECT příkazem</kategorie_popis>
+                        </radek>
+                        <radek>
+                            <kategorie>P</kategorie>
+                            <odkazy>
+                                    <link url="#D21">D21</link>
+                            </odkazy>
+                            <kategorie_popis>P - DELETE s vnořeným SELECT příkazem</kategorie_popis>
+                        </radek>
+            </pokryti_dotazu>
+        </queries>
+        <scripts>
+            <title>Scripts</title>
+            <para>
+                <link url="./create.sql">create.sql</link>
+            </para>
+            <para>
+                <link url="./insert.sql">insert.sql</link>
+            </para>
+        </scripts>
+        <conclussions>
+            <title>Závěr</title>
+                    <para>Danou prací jsem zlepšil svoje znalosti v jazyce sql. Před studiem jsem provozoval databáze, ale ty byly jednoduššího modelu.</para>
+                    <para>Také jsem zjistil o E-R modelování, kterou jsem předtím nedělal.</para>
+                    <para>Zjistil jsem, že kromě mysql také existuje postgresql, kterou jsem ale u sebe při testování nevyužíval.</para>
+                    <para>Práce mi zabralo nemalo času, ale i nemálo věcí mi dala.</para>
+        </conclussions>
+        <references>
+            <title>Zdroje</title>
+                    <para>[1] https://courses.fit.cvut.cz/BI-DBS/parttime/3.KB/index.html#_tabulka-kategorií-rozmanitosti-sql-příkazů</para>
+                    <para>[2] https://courses.fit.cvut.cz/BI-DBS/lectures/index.html</para>
+                    <para>[3] https://users.fit.cvut.cz/~hunkajir/dbs2/main.xml</para>
+                    <para>[4] https://users.fit.cvut.cz/~hunkajir/dbs/main.xml</para>
+                    <para>[5] companies: https://www.one37pm.com/gaming/top-gaming-companies</para>
+                    <para>[6] zanry: https://www.g2a.com/category/games-c189</para>
+                    <para>[7] https://www.youtube.com/watch?v=2aKLrkpv2a4</para>
+                    <para>[8] https://www.youtube.com/watch?v=dsn-1Q1yigo</para>
+                    <para>[9] https://www.youtube.com/watch?v=10Mod8VvrlU&amp;feature=youtu.be</para>
+                    <para>[10] https://www.sqltutorial.org/sql-date-functions/how-to-extract-month-from-date-in-sql/</para>
+                    <para>[11] https://stackoverflow.com/questions/31741540/rename-column-in-a-view-bug-or-feature</para>
+        </references>
+    </content>
+</sproject>
